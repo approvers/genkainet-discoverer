@@ -1,9 +1,15 @@
-import express from "express";
+import fastify from "fastify";
 
-const expressApp = express();
-expressApp.get("/discover", (req, res) => {
+const app = fastify({ logger: { prettyPrint: true } });
+
+app.get("/discover", (req, res) => {
     res.send("Hello World!");
 });
 
-const port = process.env["PORT"] ?? "3000";
-expressApp.listen(port, () => console.log(`Listening at port ${port}`));
+const port = process.env["PORT"] || 3000;
+app.listen(3000, (err) => {
+    if (err != null) {
+        app.log.error(`Failed to launch fastify: ${err}`);
+        process.exit(1);
+    }
+});
