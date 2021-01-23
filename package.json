@@ -6,7 +6,9 @@
         "dev": "ts-node-dev main.ts"
     },
     "dependencies": {
-        "@approvers/libgenkainet": "0.1.0",
+        "@approvers/libgenkainet": "0.1.1",
+        "@types/express": "^4.17.11",
+        "express": "^4.17.1",
         "ts-node": "^9.1.1",
         "ts-node-dev": "^1.1.1",
         "typescript": "^4.1.3"
