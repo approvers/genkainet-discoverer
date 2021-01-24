@@ -4,6 +4,8 @@ import fastify from "fastify";
 import fastifyWebsocket, { SocketStream } from "fastify-websocket";
 import { IncomingMessage } from "http";
 import { Data as WebSocketData } from "ws";
+// @ts-ignore
+import { RTCPeerConnection } from "wrtc";
 import EventEmitter from "events";
 import { AnswerResponse, DiscoverResponse, ErrorResponse, isOfferRequest, AnswerRequest, Response } from "./models";
 
@@ -23,13 +25,24 @@ const discovererNode = new Node(
             },
         }
     ),
-    new RTCPeerConnectionFactory([
-        "stun.l.google.com:19302",
-        "stun1.l.google.com:19302",
-        "stun2.l.google.com:19302",
-        "stun3.l.google.com:19302",
-        "stun4.l.google.com:19302",
-    ])
+
+    {
+        create() {
+            const stunServers = [
+                "stun.l.google.com:19302",
+                "stun1.l.google.com:19302",
+                "stun2.l.google.com:19302",
+                "stun3.l.google.com:19302",
+                "stun4.l.google.com:19302",
+            ];
+
+            return new RTCPeerConnection({
+                iceServer: stunServers.map((server) => ({
+                    url: server,
+                })),
+            });
+        },
+    }
 );
 
 app.register(fastifyWebsocket);
@@ -119,13 +132,18 @@ function onDiscoverRequest(): DiscoverResponse {
 }
 
 async function onOffer(request: AnswerRequest): Promise<AnswerResponse> {
+    const createAnswer = (ans: IAnswer): AnswerResponse => ({
+        type: "answer",
+        object: { from: { id: ans.from.id }, to: { id: ans.to.id }, sdp: ans.sdp },
+    });
+
     const offer = request.object;
 
     if (offer.to.id === discovererNode.id) {
         const [connection, answer] = await discovererNode.accept(offer);
         network.add(connection);
 
-        return { type: "answer", object: answer };
+        return createAnswer(answer);
     }
 
     discovererNode.send(new OfferPacket(offer, discovererNode, offer.to));
@@ -134,5 +152,5 @@ async function onOffer(request: AnswerRequest): Promise<AnswerResponse> {
         answerChannel.once(offer.to.id, (answer) => resolve(answer));
     });
 
-    return { type: "answer", object: answer };
+    return createAnswer(answer);
 }
