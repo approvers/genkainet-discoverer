@@ -61,7 +61,12 @@ function websocketHandler(connection: SocketStream, request: IncomingMessage) {
 
     const socket = connection.socket;
 
-    socket.on("message", async (data) => socket.send(JSON.stringify(await onData(data))));
+    socket.on("message", async (msg) => {
+        const data = await onData(msg);
+        if (data != null) {
+            socket.send(JSON.stringify(data));
+        }
+    });
     socket.on("close", () => app.log.info(`${request.socket.remoteAddress ?? "unknown"} has disconnected!`));
 }
 
@@ -82,7 +87,7 @@ function getAllNodes(): Array<INode> {
     return dedupedNodeIDs.map((id) => nodes.find((node) => node.id === id)!);
 }
 
-async function onData(data: WebSocketData): Promise<Response> {
+async function onData(data: WebSocketData): Promise<Response | null> {
     const error = (message: string): ErrorResponse => ({ type: "error", message });
 
     if (typeof data !== "string") {
@@ -114,11 +119,11 @@ async function onData(data: WebSocketData): Promise<Response> {
                 return await onOffer(parsedData);
 
             default:
-                return error("Unknown request type");
+                return null;
         }
     } catch (e: unknown) {
         app.log.error(`error occur: ${e}`);
-        return { type: "internalServerError" };
+        return null;
     }
 }
 
