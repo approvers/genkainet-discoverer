@@ -98,10 +98,11 @@ async function onData(data: WebSocketData): Promise<Response> {
 }
 
 function onDiscoverRequest(): DiscoverResponse {
-    const nodeIDs = getAllNodes();
-    const randomIndex = Math.round(Math.random() * (nodeIDs.length - 1));
+    const nodes = getAllNodes();
+    const genRandomIndex = () => Math.round(Math.random() * (nodes.length - 1));
 
-    const node = nodeIDs[randomIndex];
+    const node = nodes.length === 0 ? discovererNode : nodes[genRandomIndex()];
+
     return {
         type: "responseDiscover",
         object: {
