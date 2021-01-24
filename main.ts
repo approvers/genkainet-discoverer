@@ -102,18 +102,23 @@ async function onData(data: WebSocketData): Promise<Response> {
         return error(`No "type" field in request`);
     }
 
-    switch (type) {
-        case "requestDiscover":
-            return onDiscoverRequest();
+    try {
+        switch (type) {
+            case "requestDiscover":
+                return onDiscoverRequest();
 
-        case "offer":
-            if (!isOfferRequest(parsedData)) {
-                return error("Invalid OfferRequest");
-            }
-            return await onOffer(parsedData);
+            case "offer":
+                if (!isOfferRequest(parsedData)) {
+                    return error("Invalid OfferRequest");
+                }
+                return await onOffer(parsedData);
 
-        default:
-            return error("Unknown request type");
+            default:
+                return error("Unknown request type");
+        }
+    } catch (e: unknown) {
+        app.log.error(`error occur: ${e}`);
+        return { type: "internalServerError" };
     }
 }
 

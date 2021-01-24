@@ -25,7 +25,11 @@ export type ErrorResponse = {
     message: string;
 };
 
-export type Response = DiscoverResponse | AnswerResponse | ErrorResponse;
+export type InternalServerError = {
+    type: "internalServerError";
+};
+
+export type Response = DiscoverResponse | AnswerResponse | ErrorResponse | InternalServerError;
 
 export function isObject(obj: unknown): obj is Record<string, unknown> {
     return obj != null && typeof obj === "object";
