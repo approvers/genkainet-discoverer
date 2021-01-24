@@ -62,9 +62,13 @@ function websocketHandler(connection: SocketStream, request: IncomingMessage) {
     const socket = connection.socket;
 
     socket.on("message", async (msg) => {
-        const data = await onData(msg);
-        if (data != null) {
-            socket.send(JSON.stringify(data));
+        try {
+            const data = await onData(msg);
+            if (data != null) {
+                socket.send(JSON.stringify(data));
+            }
+        } catch (e: unknown) {
+            app.log.error(`error occur: ${e}`);
         }
     });
     socket.on("close", () => app.log.info(`${request.socket.remoteAddress ?? "unknown"} has disconnected!`));
