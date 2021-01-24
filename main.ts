@@ -5,7 +5,7 @@ import fastifyWebsocket, { SocketStream } from "fastify-websocket";
 import { IncomingMessage } from "http";
 import { Data as WebSocketData } from "ws";
 import EventEmitter from "events";
-import { AnswerResponse, DiscoverResponse, ErrorResponse, isOfferRequest, OfferRequest, Response } from "./models";
+import { AnswerResponse, DiscoverResponse, ErrorResponse, isOfferRequest, AnswerRequest, Response } from "./models";
 
 const app = fastify({ logger: { prettyPrint: true } });
 const answerChannel = new EventEmitter();
@@ -48,8 +48,8 @@ function websocketHandler(connection: SocketStream, request: IncomingMessage) {
 
     const socket = connection.socket;
 
-    socket.on("message", (data) => onData(data));
-    socket.on("close", () => app.log.info(`${request.url ?? "unknown"} has disconnected!`));
+    socket.on("message", async (data) => socket.send(JSON.stringify(await onData(data))));
+    socket.on("close", () => app.log.info(`${request.socket.remoteAddress ?? "unknown"} has disconnected!`));
 }
 
 function dedup<T>(array: Array<T>): Array<T> {
@@ -118,20 +118,20 @@ function onDiscoverRequest(): DiscoverResponse {
     };
 }
 
-async function onOffer(request: OfferRequest): Promise<AnswerResponse> {
-    const { to, offer } = request.object;
+async function onOffer(request: AnswerRequest): Promise<AnswerResponse> {
+    const offer = request.object;
 
-    if (to.id === discovererNode.id) {
+    if (offer.to.id === discovererNode.id) {
         const [connection, answer] = await discovererNode.accept(offer);
         network.add(connection);
 
         return { type: "answer", object: answer };
     }
 
-    discovererNode.send(new OfferPacket(offer, discovererNode, to));
+    discovererNode.send(new OfferPacket(offer, discovererNode, offer.to));
 
     const answer = await new Promise<IAnswer>((resolve) => {
-        answerChannel.once(to.id, (answer) => resolve(answer));
+        answerChannel.once(offer.to.id, (answer) => resolve(answer));
     });
 
     return { type: "answer", object: answer };

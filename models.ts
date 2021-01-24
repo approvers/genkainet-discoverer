@@ -10,12 +10,9 @@ export type DiscoverResponse = {
     object: INode;
 };
 
-export type OfferRequest = {
+export type AnswerRequest = {
     type: "offer";
-    object: {
-        offer: IOffer;
-        to: INode;
-    };
+    object: IOffer;
 };
 
 export type AnswerResponse = {
@@ -48,12 +45,6 @@ export function isIOffer(obj: unknown): obj is IOffer {
     );
 }
 
-export function isOfferRequest(obj: unknown): obj is OfferRequest {
-    return (
-        isObject(obj) &&
-        obj["type"] === "offer" &&
-        isObject(obj["object"]) &&
-        isIOffer(obj["object"]["offer"]) &&
-        isINode(obj["object"]["to"])
-    );
+export function isOfferRequest(obj: unknown): obj is AnswerRequest {
+    return isObject(obj) && obj["type"] === "offer" && isObject(obj["object"]) && isIOffer(obj["object"]);
 }
