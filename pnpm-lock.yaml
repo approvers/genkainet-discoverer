@@ -1,5 +1,5 @@
 dependencies:
-  '@approvers/libgenkainet': 0.1.1
+  '@approvers/libgenkainet': 0.1.3
   '@types/node': 14.14.22
   fastify: 3.10.1
   fastify-websocket: 2.1.0
@@ -12,13 +12,13 @@ devDependencies:
   prettier: 2.2.1
 lockfileVersion: 5.2
 packages:
-  /@approvers/libgenkainet/0.1.1:
+  /@approvers/libgenkainet/0.1.3:
     dependencies:
       typescript: 4.1.3
     dev: false
     resolution:
-      integrity: sha512-5ScIF5fxR7t9oK4EG1iNpMNhLgPluVczdG/pf2WqUfp3tEF+I4dzP398StIhAc4BUbdqecO2N1quzj7tIK5aNg==
-      tarball: download/@approvers/libgenkainet/0.1.1/636d1db1b5dfc9ca018b0c3c271b9f4cf3947467d2e1aea498ff23e1c44c646c
+      integrity: sha512-pxt6iDjye4vlNi68UKxbSFASpJ3SSZhoDWX1nhkpYYt9TDBhAQjB8urqjZ2xKPvB29C5ky8Z/R0EXM9loW1HfA==
+      tarball: download/@approvers/libgenkainet/0.1.3/4a00109118b2d7669c10a604847fe0d13f08ac4746c19b272658741a06aa1549
   /@hapi/bourne/2.0.0:
     dev: false
     resolution:
@@ -1219,7 +1219,7 @@ packages:
     resolution:
       integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
 specifiers:
-  '@approvers/libgenkainet': 0.1.1
+  '@approvers/libgenkainet': 0.1.3
   '@types/node': ^14.14.22
   '@types/ws': ^7.4.0
   fastify: ^3.10.1
