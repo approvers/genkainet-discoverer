@@ -1,5 +1,5 @@
 import { DefaultHandlerFactory, INode, Network, Node, OfferPacket } from "@approvers/libgenkainet/";
-import { IAnswer } from "@approvers/libgenkainet/dist/webrtc";
+import { IAnswer, RTCPeerConnectionFactory } from "@approvers/libgenkainet/dist/webrtc";
 import fastify from "fastify";
 import fastifyWebsocket, { SocketStream } from "fastify-websocket";
 import { IncomingMessage } from "http";
@@ -22,7 +22,14 @@ const discovererNode = new Node(
                 answerChannel.emit(answer.from.id, answer);
             },
         }
-    )
+    ),
+    new RTCPeerConnectionFactory([
+        "stun.l.google.com:19302",
+        "stun1.l.google.com:19302",
+        "stun2.l.google.com:19302",
+        "stun3.l.google.com:19302",
+        "stun4.l.google.com:19302",
+    ])
 );
 
 app.register(fastifyWebsocket);
